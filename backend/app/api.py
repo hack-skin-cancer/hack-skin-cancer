@@ -4,6 +4,9 @@ from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, _
 from azure.keyvault.secrets import SecretClient
 from azure.identity import DefaultAzureCredential
 import random, string, os
+from azure.core.credentials import AzureNamedKeyCredential
+from azure.data.tables import TableClient
+import json
 
 def get_storage_cn():
     kv_name = "kvhack4skin"
@@ -51,7 +54,11 @@ async def upload_picture() -> dict:
 
 @app.post("/uploadImage/", tags=["ingest"])
 async def upload_image(file: UploadFile):
-# Upload an image
+    """
+        Uploads an image to the 'uploads container
+        On Success: returns a Json Object:
+            {'filename': <file_name>}
+    """
     filename = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(16))
     file_split_tup = os.path.splitext(file.filename)
     filename += file_split_tup[1]
@@ -62,3 +69,26 @@ async def upload_image(file: UploadFile):
     print(f"Random Filename: {filename}")
     print(f"Actual Filename: {file.filename}")
     return {"filename": file.filename}
+
+
+@app.get("/getResults/", tags=["results"])
+async def get_results(request_id:str) -> dict:
+    """
+        Retrieves results based on the request_id submitted
+        On success: returns json payload
+        On Failure: returns an empty dictionary object as json
+    """
+    filter = f"request_id eq '{request_id}'"
+    storage_cn = get_storage_cn()   #Get storage account connection string
+    table_client = TableClient.from_connection_string(storage_cn, table_name = "results")
+    entities = table_client.query_entities(
+        query_filter=filter
+    )
+    entity = {}
+    try:
+        entity = entities.next()
+        print(json.dumps(entity))
+    # ...
+    except StopIteration:
+        None
+    return json.dumps(entity)

@@ -5,3 +5,4 @@ python-multipart
 azure-storage-blob
 azure-identity
 azure-keyvault-secrets
+azure-data-tables
