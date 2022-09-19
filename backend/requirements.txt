@@ -1,2 +1,7 @@
 fastapi
 uvicorn
+jinja2
+python-multipart
+azure-storage-blob
+azure-identity
+azure-keyvault-secrets
