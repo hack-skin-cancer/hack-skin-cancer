@@ -21,7 +21,7 @@ app.add_middleware(
 
 @app.get("/", tags=["root"])
 async def read_root() -> dict:
-    return {"message": "Welcome to your todo list."}
+    return {"message": "Hello World, I'm an API!"}
 
 
 @app.get("/upload", tags=["ingest"])
