@@ -1,0 +1,13 @@
+.footer {
+  position: absolute;
+  bottom: 0px;
+  text-align: center;
+  background-color: #0078d4;
+  color: white;
+  cursor: pointer;
+}
+
+img {
+  max-height: 50px;
+  width: auto;
+}
