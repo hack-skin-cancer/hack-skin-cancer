@@ -1,16 +1,8 @@
 import React from "react";
 import { render } from 'react-dom';
-import { ChakraProvider } from "@chakra-ui/react";
-
-import Header from "./components/Header";
-
-function App() {
-  return (
-    <ChakraProvider>
-      <Header />
-    </ChakraProvider>
-  )
-}
+import App from './App';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "./index.css";
 
 const rootElement = document.getElementById("root")
 render(<App />, rootElement)
