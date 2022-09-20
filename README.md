@@ -1,3 +1,8 @@
+# Note
+
+This project is part of a Hackathon, or experimental project with no support or quality guarantee implied.
+
+
 # Getting Started
 
 ### Installing Python dependencies
