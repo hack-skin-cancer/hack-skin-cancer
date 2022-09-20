@@ -23,9 +23,6 @@ jobs:
       - name: Install requirements
         run: pip install -r backend/requirements.txt
 
-      - name: Run automated tests
-        run: pytest -vv
-
   Docker_Build_And_Scan:
       needs: Build
       runs-on: ubuntu-latest
