@@ -1,4 +1,7 @@
 FROM --platform=linux/amd64 python:3-slim-buster
+ENV AZURE_CLIENT_ID=
+ENV AZURE_TENANT_ID=
+ENV AZURE_CLIENT_SECRET=
 
 EXPOSE 8000/TCP
 
@@ -22,4 +25,4 @@ COPY ./backend/ /app
 COPY ./backend/requirements.txt .
 RUN pip install -r requirements.txt
 
-CMD ["uvicorn", "app.api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.api:app", "--host", "0.0.0.0", "--port", "8080"]
