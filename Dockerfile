@@ -1,7 +1,4 @@
 FROM --platform=linux/amd64 python:3-slim-buster
-ENV AZURE_CLIENT_ID=
-ENV AZURE_TENANT_ID=
-ENV AZURE_CLIENT_SECRET=
 
 EXPOSE 8080/TCP
 
