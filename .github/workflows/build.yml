@@ -25,3 +25,20 @@ jobs:
 
       - name: Run automated tests
         run: pytest -vv
+
+  Docker_Build_And_Scan:
+      needs: Build
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v3
+      #Docker Login
+      - name: Docker Images Build And Push
+        uses: azure/docker-login@v1
+        with:
+          login-server: hackacr.azurecr.io
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - run: |
+          docker build . -t hackacr.azurecr.io/hackcancer:${{github.run_number}} -t hackacr.azurecr.io/hackcancer:latest
+          docker push hackacr.azurecr.io/hackcancer:${{github.run_number}}
+          docker push hackacr.azurecr.io/hackcancer:latest
