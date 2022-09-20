@@ -25,3 +25,4 @@ jobs:
 
       - name: Run automated tests
         run: pytest -vv
+        
