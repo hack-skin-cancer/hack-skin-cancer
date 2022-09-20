@@ -58,7 +58,7 @@ async def upload_picture() -> dict:
 
 
 @app.post("/uploadImage/", tags=["ingest"])
-async def upload_image(file: UploadFile):
+async def upload_image(file: UploadFile)-> dict:
     """
         Uploads an image to the 'uploads container
         On Success: returns a Json Object:
