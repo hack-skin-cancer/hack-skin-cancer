@@ -2,6 +2,7 @@
 
 This project is part of a Hackathon, or experimental project with no support or quality guarantee implied.
 
+This model/application is intended for research and development use only. The model/application is not intended for use in clinical diagnosis or clinical decision-making or for any other clinical use and the performance of the model/application for clinical use has not been established
 
 # Getting Started
 
