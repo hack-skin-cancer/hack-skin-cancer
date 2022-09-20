@@ -6,7 +6,12 @@ from azure.identity import DefaultAzureCredential
 import random, string, os
 from azure.core.credentials import AzureNamedKeyCredential
 from azure.data.tables import TableClient
-import json
+import json, requests
+from azure.storage.queue import (
+        QueueClient,
+        BinaryBase64EncodePolicy,
+        BinaryBase64DecodePolicy
+)
 
 def get_storage_cn():
     kv_name = "kvhack4skin"
@@ -59,6 +64,7 @@ async def upload_image(file: UploadFile):
         On Success: returns a Json Object:
             {'filename': <file_name>}
     """
+    q_name = "upload-q"
     filename = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(16))
     file_split_tup = os.path.splitext(file.filename)
     filename += file_split_tup[1]
@@ -66,9 +72,23 @@ async def upload_image(file: UploadFile):
     contents = await file.read()
     blob = BlobClient.from_connection_string(storage_cn, container_name="uploads", blob_name=filename)
     blob.upload_blob(contents)
+
+    # Drop message on a Queue
+    queue_client = QueueClient.from_connection_string(storage_cn, q_name)
+    queue_client.send_message(filename)
+
+    # Call ML API
+    '''
+    try:
+        response = requests.post('PUT_URI_IN_HERE', data=contents, headers={'Content-Type': 'application/octet-stream'})
+    except Exception:
+        response = {"Error": "Error sending request","filename": file.filename }
+    '''
+    
     print(f"Random Filename: {filename}")
     print(f"Actual Filename: {file.filename}")
-    return {"filename": file.filename}
+    #return {"filename": file.filename}
+    return response
 
 
 @app.get("/getResults/", tags=["results"])
@@ -87,7 +107,7 @@ async def get_results(request_id:str) -> dict:
     entity = {}
     try:
         entity = entities.next()
-        print(json.dumps(entity))
+        print(entity)
     # ...
     except StopIteration:
         None
