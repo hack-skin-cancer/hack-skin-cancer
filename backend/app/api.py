@@ -78,13 +78,14 @@ async def upload_image(file: UploadFile):
     queue_client.send_message(filename)
 
     # Call ML API
+    response = {"Success": "File Uploaded","filename": file.filename }
     '''
     try:
         response = requests.post('PUT_URI_IN_HERE', data=contents, headers={'Content-Type': 'application/octet-stream'})
     except Exception:
         response = {"Error": "Error sending request","filename": file.filename }
     '''
-    
+
     print(f"Random Filename: {filename}")
     print(f"Actual Filename: {file.filename}")
     #return {"filename": file.filename}
