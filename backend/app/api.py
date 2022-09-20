@@ -67,18 +67,18 @@ async def upload_image(file: UploadFile)-> dict:
     q_name = "upload-q"
     filename = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(16))
     file_split_tup = os.path.splitext(file.filename)
-    filename += file_split_tup[1]
+    coded_filename = filename + file_split_tup[1]
     storage_cn = get_storage_cn()   #Get storage account connection string
     contents = await file.read()
-    blob = BlobClient.from_connection_string(storage_cn, container_name="uploads", blob_name=filename)
+    blob = BlobClient.from_connection_string(storage_cn, container_name="uploads", blob_name=coded_filename)
     blob.upload_blob(contents)
 
     # Drop message on a Queue
     queue_client = QueueClient.from_connection_string(storage_cn, q_name)
-    queue_client.send_message(filename)
+    queue_client.send_message(coded_filename)
 
     # Call ML API
-    response = {"Success": "File Uploaded","filename": file.filename }
+    response = {"Success": "File Uploaded","upload_filename": file.filename, "request_id": filename}
     '''
     try:
         response = requests.post('PUT_URI_IN_HERE', data=contents, headers={'Content-Type': 'application/octet-stream'})
