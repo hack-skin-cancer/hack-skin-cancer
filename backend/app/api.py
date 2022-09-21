@@ -7,11 +7,15 @@ import random, string, os
 from azure.core.credentials import AzureNamedKeyCredential
 from azure.data.tables import TableClient
 import json, requests
+from datetime import datetime
 from azure.storage.queue import (
         QueueClient,
         BinaryBase64EncodePolicy,
         BinaryBase64DecodePolicy
 )
+
+settings = {}
+
 
 def get_storage_cn():
     kv_name = "kvhack4skin"
@@ -37,24 +41,25 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+def load_settings():
+    global settings
+    __location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    try:
+        with open(os.path.join(__location__, 'appsettings.json')) as settings_data:
+            appsettings = json.load(settings_data)
+            settings = appsettings
+    except Exception as e:
+        print(f"There was an error reading appsettings from: {'appsettings.json'}")
 
-@app.get('/eat', tags=["ingest"])
-def consume() -> dict:
-    return {"data":"Yes I can consume this too!"}
-
-def configure():
-    None
-
-configure()
+    print(settings)
+load_settings()
 
 @app.get("/", tags=["root"])
 async def read_root() -> dict:
-    return {"message": "Hello World, I'm an API!"}
-
-
-@app.get("/upload", tags=["ingest"])
-async def upload_picture() -> dict:
-    return {"data": "Whoo hoo!"}
+    
+    date_time = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+    return {"message": "Welcome to the Hack-Cancer API!", "time":f"{date_time}", "vars":settings}
 
 
 @app.post("/uploadImage/", tags=["ingest"])
