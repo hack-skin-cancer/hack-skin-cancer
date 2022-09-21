@@ -23,7 +23,7 @@ jobs:
       - name: Install requirements
         run: pip install -r backend/requirements.txt
 
-  Docker_Build_And_Scan:
+  Docker_Build_And_Push:
       needs: Build
       runs-on: ubuntu-latest
       steps:
