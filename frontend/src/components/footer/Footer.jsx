@@ -5,16 +5,22 @@ import Container from 'react-bootstrap/Container';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 
 export default function Header(props) {
+  // States
   const [show, setShow] = useState(false);
 
+  // Handlers
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  // Render
   return (
     <>
+      {/* Microsoft logo image */}
       <Container fluid className="footer" onClick={handleShow}>
         <Image src="images/Microsoft-logo_rgb_c-wht.png"></Image>
       </Container>
+      
+      {/* Disclamer section */}
       <Offcanvas show={show} onHide={handleClose} placement={'bottom'}>
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>Disclaimer</Offcanvas.Title>

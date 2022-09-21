@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./WelcomeScreen.css";
 import Header from "../../header/Header";
 import Main from "../../main/Main";
@@ -8,19 +9,25 @@ import Carousel from 'react-bootstrap/Carousel';
 import Card from 'react-bootstrap/Card';
 
 export default function WelcomeScreen() {
+    // Navigate
+    let navigate = useNavigate();
+
+    // Method to go to input screen
     const goToInputScreen = () => {
-        window.location = "/input";
+        navigate("/input");
     }
 
+    // Render
     return (
         <>
             <Header title="Hackaway at Cancer" subtitle="Welcome" />
             <Main>
-                <Carousel style={{height:'300px'}} variant="dark">
+                {/* Welcome slides */}
+                <Carousel style={{ height: '300px' }} variant="dark">
                     <Carousel.Item>
-                        <Card style={{height:'300px'}}>
-                            <Card.Body style={{paddingLeft:'3rem', paddingRight:'3rem'}}>
-                                <Card.Title>Card Title</Card.Title>
+                        <Card style={{ height: '300px' }}>
+                            <Card.Body style={{ paddingLeft: '3rem', paddingRight: '3rem' }}>
+                                <Card.Title>Card Title v3</Card.Title>
                                 <Card.Text>
                                     Some quick example text to build on the card title and make up the
                                     bulk of the card's content.
@@ -29,8 +36,8 @@ export default function WelcomeScreen() {
                         </Card>
                     </Carousel.Item>
                     <Carousel.Item>
-                        <Card style={{height:'300px'}}>
-                            <Card.Body style={{paddingLeft:'3rem', paddingRight:'3rem'}}>
+                        <Card style={{ height: '300px' }}>
+                            <Card.Body style={{ paddingLeft: '3rem', paddingRight: '3rem' }}>
                                 <Card.Title>Card Title</Card.Title>
                                 <Card.Text>
                                     Some quick example text to build on the card title and make up the
@@ -40,10 +47,13 @@ export default function WelcomeScreen() {
                         </Card>
                     </Carousel.Item>
                 </Carousel>
+
                 <hr></hr>
-                <Button style={{width:'100%'}} variant="primary" onClick={goToInputScreen}>Start</Button>
+
+                {/* Forward button */}
+                <Button style={{ width: '100%' }} variant="primary" onClick={goToInputScreen}>Start</Button>
             </Main>
-            <Footer note="Microsoft" />
+            <Footer />
         </>
     );
 }
