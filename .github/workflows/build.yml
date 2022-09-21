@@ -23,7 +23,7 @@ jobs:
       - name: Install requirements
         run: pip install -r backend/requirements.txt
 
-  Docker_Build_And_Scan:
+  Docker_Build_And_Push:
       needs: Build
       runs-on: ubuntu-latest
       steps:
@@ -39,3 +39,12 @@ jobs:
           docker build . -t hackacr.azurecr.io/hackcancer:${{github.run_number}} -t hackacr.azurecr.io/hackcancer:latest
           docker push hackacr.azurecr.io/hackcancer:${{github.run_number}}
           docker push hackacr.azurecr.io/hackcancer:latest
+
+  Invoke_Webhook_CD:
+    needs: Docker_Build_And_Push
+    runs-on: ubuntu-latest
+    steps:
+    - name: Invoke deployment hook
+      uses: distributhor/workflow-webhook@v2
+      env:
+        webhook_url: https://$hack-cancer:sduRChuLK80rSr3TAyclDCwojPd07usKFWx2dCGJJApsxoPDZtX2ql2RExb3@hack-cancer.scm.azurewebsites.net/api/registry/webhook
