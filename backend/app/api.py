@@ -30,7 +30,8 @@ app = FastAPI()
 origins = [
     "http://localhost:8080",
     "localhost:8080",
-    "https://hack-cancer-app.azurewebsites.net"
+    "https://hack-cancer-app.azurewebsites.net",
+    "*"
 ]
 
 
