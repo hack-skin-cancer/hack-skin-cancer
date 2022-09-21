@@ -28,8 +28,9 @@ def get_storage_cn():
 app = FastAPI()
 
 origins = [
-    "http://localhost:3000",
-    "localhost:3000"
+    "http://localhost:8080",
+    "localhost:8080",
+    "https://hack-cancer-app.azurewebsites.net"
 ]
 
 
