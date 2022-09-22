@@ -8,6 +8,8 @@ from azure.core.credentials import AzureNamedKeyCredential
 from azure.data.tables import TableClient
 import json, requests
 from datetime import datetime
+import tfwriter
+
 from azure.storage.queue import (
         QueueClient,
         BinaryBase64EncodePolicy,
@@ -30,6 +32,7 @@ app = FastAPI()
 origins = [
     "http://localhost:8080",
     "localhost:8080",
+    "http://hack-cancer-app.azurewebsites.net"
     "https://hack-cancer-app.azurewebsites.net",
     "*"
 ]
@@ -45,8 +48,7 @@ app.add_middleware(
 
 def load_settings():
     global settings
-    __location__ = os.path.realpath(
-    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
     try:
         with open(os.path.join(__location__, 'appsettings.json')) as settings_data:
             appsettings = json.load(settings_data)
@@ -84,7 +86,20 @@ async def upload_image(file: UploadFile)-> dict:
     queue_client = QueueClient.from_connection_string(storage_cn, q_name)
     queue_client.send_message(coded_filename)
 
-    # Call ML API
+    # Create and Upload TF Records File
+    _location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    tf_filename = os.path.join(_location, f"{filename}.tfrecords")
+    tf_file_contents = tfwriter.write_tfrecord(tf_filename, coded_filename, contents)
+    os.remove(tf_filename)  # Remote the TF File
+
+    # Upload TFfile to Blob Storage
+    blob = BlobClient.from_connection_string(storage_cn, container_name="uploads", blob_name=tf_filename)
+    blob.upload_blob(tf_file_contents)
+
+    queue_client = QueueClient.from_connection_string(storage_cn, q_name)
+    queue_client.send_message(tf_filename)
+    # -------
+
     response = {"Success": "File Uploaded","upload_filename": file.filename, "request_id": filename}
     '''
     try:
