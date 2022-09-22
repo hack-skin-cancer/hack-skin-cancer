@@ -87,6 +87,10 @@ async def upload_image(file: UploadFile)-> dict:
     queue_client = QueueClient.from_connection_string(storage_cn, q_name)
     queue_client.send_message({"filename":coded_filename, "url": blob.url})
 
+    # Call REST API
+    api_url = "http://20.169.250.11:5000/melanoma_predict"
+    json_payload = {"filename":coded_filename, "url": blob.url}
+    response = requests.get(api_url, json.dumps(json_payload))
 
     # Create and Upload TF Records File
     # _location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
