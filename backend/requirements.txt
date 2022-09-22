@@ -8,3 +8,4 @@ azure-keyvault-secrets
 azure-data-tables
 pytest
 azure-storage-queue
+tensorflow
