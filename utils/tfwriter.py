@@ -4,6 +4,8 @@ from PIL import Image
 import numpy as  np
 from utils import make_dirs
 
+
+
 def _create_bytes_feature(value):
   """Returns a bytes_list from a string / byte."""
   if isinstance(value, type(tf.constant(0))):
