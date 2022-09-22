@@ -8,7 +8,7 @@ from azure.core.credentials import AzureNamedKeyCredential
 from azure.data.tables import TableClient
 import json, requests
 from datetime import datetime
-import app.tf_writer
+#import app.tf_writer
 
 from azure.storage.queue import (
         QueueClient,
@@ -86,15 +86,17 @@ async def upload_image(file: UploadFile)-> dict:
     queue_client = QueueClient.from_connection_string(storage_cn, q_name)
     queue_client.send_message(coded_filename)
 
+
     # Create and Upload TF Records File
-    _location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-    tf_filename = os.path.join(_location, f"{filename}.tfrecords")
-    tf_file_contents = tfwriter.write_tfrecord(tf_filename, coded_filename, contents)
-    os.remove(tf_filename)  # Remote the TF File
+    # _location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    # tf_filename = os.path.join(_location, f"{filename}.tfrecords")
+    # tf_file_contents = tfwriter.write_tfrecord(tf_filename, coded_filename, contents)
+    # os.remove(tf_filename)  # Remote the TF File
 
     # Upload TFfile to Blob Storage
-    blob = BlobClient.from_connection_string(storage_cn, container_name="uploads", blob_name=tf_filename)
-    blob.upload_blob(tf_file_contents)
+    # blob = BlobClient.from_connection_string(storage_cn, container_name="uploads", blob_name=tf_filename)
+    # blob.upload_blob(tf_file_contents)
+
 
     queue_client = QueueClient.from_connection_string(storage_cn, q_name)
     queue_client.send_message(tf_filename)
