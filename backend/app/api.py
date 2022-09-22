@@ -8,7 +8,7 @@ from azure.core.credentials import AzureNamedKeyCredential
 from azure.data.tables import TableClient
 import json, requests
 from datetime import datetime
-import tfwriter
+import app.tf_writer
 
 from azure.storage.queue import (
         QueueClient,
