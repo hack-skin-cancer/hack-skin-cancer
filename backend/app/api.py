@@ -81,10 +81,11 @@ async def upload_image(file: UploadFile)-> dict:
     contents = await file.read()
     blob = BlobClient.from_connection_string(storage_cn, container_name="uploads", blob_name=coded_filename)
     blob.upload_blob(contents)
+    print(f"Uplaoded blob to: {blob.url}")
 
     # Drop message on a Queue
     queue_client = QueueClient.from_connection_string(storage_cn, q_name)
-    queue_client.send_message(coded_filename)
+    queue_client.send_message({"filename":coded_filename, "url": blob.url})
 
 
     # Create and Upload TF Records File
@@ -98,8 +99,8 @@ async def upload_image(file: UploadFile)-> dict:
     # blob.upload_blob(tf_file_contents)
 
 
-    queue_client = QueueClient.from_connection_string(storage_cn, q_name)
-    queue_client.send_message(tf_filename)
+    #queue_client = QueueClient.from_connection_string(storage_cn, q_name)
+    #queue_client.send_message(blob.url)
     # -------
 
     response = {"Success": "File Uploaded","upload_filename": file.filename, "request_id": filename}
