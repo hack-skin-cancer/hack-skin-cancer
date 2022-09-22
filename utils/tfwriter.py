@@ -2,8 +2,6 @@ import os, glob
 import tensorflow as tf
 from PIL import Image
 import numpy as  np
-from utils import make_dirs
-
 
 
 def _create_bytes_feature(value):
