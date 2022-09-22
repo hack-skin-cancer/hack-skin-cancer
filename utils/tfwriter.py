@@ -23,7 +23,7 @@ def write_tfrecord():
     record_file = os.path.join(_location, 'my_tfrec.tfrecords')
     #record_file = "images/TFRecords/my-tfR.tfrecords"
     _location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__), 'images'))
-    list_files = glob.glob(_location + "*.jpg")
+    list_files = glob.glob(_location + os.sep + "*.jpg")
     labels = [0, 1]
     images_labels = {
         list_files[0] : labels[0],
