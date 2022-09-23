@@ -117,7 +117,10 @@ def save_results(request_id:str, results:str) -> {}:
     try:
         tmp = results.text
         tmp = tmp.replace('\n', '')
-        json_data = json.dumps(tmp)
+        tmp = json.loads(tmp)
+        tmp['PartitionKey'] = request_id
+        tmp['RowKey'] = request_id
+        tmp['request_id'] = request_id
 
         table_service_client = TableServiceClient.from_connection_string(conn_str=storage_cn)
         table_client = table_service_client.get_table_client(table_name="results")
@@ -127,7 +130,7 @@ def save_results(request_id:str, results:str) -> {}:
     except Exception as e:
         print(f"Exception writing to Table: {e}")    
     
-    return {"success:": success, "request_id": request_id}
+    return {"success:": success, "prediction": tmp['pred_score']}
 
 
 @app.get("/getResults/", tags=["results"])
