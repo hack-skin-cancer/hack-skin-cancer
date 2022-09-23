@@ -1,3 +1,4 @@
+from turtle import st
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, __version__
@@ -88,9 +89,12 @@ async def upload_image(file: UploadFile)-> dict:
     queue_client.send_message({"filename":coded_filename, "url": blob.url})
 
     # Call REST API
-    api_url = "http://20.169.250.11:5000/melanoma_predict"
-    json_payload = {"filename":coded_filename, "url": blob.url}
-    response = requests.get(api_url, json.dumps(json_payload))
+    try:
+        api_url = "http://20.169.250.11:5000/melanoma_predict"
+        json_payload = {"filename":coded_filename, "url": blob.url}
+        response = requests.get(api_url, json.dumps(json_payload))
+    except Exception:
+        None
 
     # Create and Upload TF Records File
     # _location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
@@ -121,6 +125,22 @@ async def upload_image(file: UploadFile)-> dict:
     return response
 
 
+@app.get("/saveResults", tags=["results"])
+async def save_results(request_id:str, results:str) -> {}:
+    success = False
+    filter = f"request_id eq '{request_id}'"
+    storage_cn = get_storage_cn()
+    try:
+        json_data = json.dumps(results)
+        table_client = TableClient.from_connection_string(storage_cn, table_name = "results")
+        entity = table_client.create_entity(entity=json_data)
+        success = True
+    except Exception:
+        print(f"Exception writing to Table: {Exception}")    
+    
+    return {"success:": success, "request_id": request_id}
+
+    
 @app.get("/getResults/", tags=["results"])
 async def get_results(request_id:str) -> dict:
     """
