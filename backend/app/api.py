@@ -7,6 +7,7 @@ from azure.identity import DefaultAzureCredential
 import random, string, os
 from azure.core.credentials import AzureNamedKeyCredential
 from azure.data.tables import TableClient
+from azure.data.tables import TableServiceClient
 import json, requests
 from datetime import datetime
 #import app.tf_writer
@@ -89,35 +90,18 @@ async def upload_image(file: UploadFile)-> dict:
     queue_client.send_message({"filename":coded_filename, "url": blob.url})
 
     # Call REST API
+    response = None
     try:
         api_url = "http://20.169.250.11:5000/melanoma_predict"
-        json_payload = {"filename":coded_filename, "url": blob.url}
-        response = requests.get(api_url, json.dumps(json_payload))
-    except Exception:
-        None
-
-    # Create and Upload TF Records File
-    # _location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-    # tf_filename = os.path.join(_location, f"{filename}.tfrecords")
-    # tf_file_contents = tfwriter.write_tfrecord(tf_filename, coded_filename, contents)
-    # os.remove(tf_filename)  # Remote the TF File
-
-    # Upload TFfile to Blob Storage
-    # blob = BlobClient.from_connection_string(storage_cn, container_name="uploads", blob_name=tf_filename)
-    # blob.upload_blob(tf_file_contents)
-
-
-    #queue_client = QueueClient.from_connection_string(storage_cn, q_name)
-    #queue_client.send_message(blob.url)
-    # -------
+        headers = {'Content-type': 'application/json'}
+        json_payload = {"request_id":filename, "blob_name": coded_filename}
+        response = requests.post(api_url, json.dumps(json_payload), headers=headers)
+        print(f"----> Response: {response}")
+        save_results(filename, response)
+    except Exception as e:
+        print({"Error": {response}, "Exception:":e})
 
     response = {"Success": "File Uploaded","upload_filename": file.filename, "request_id": filename}
-    '''
-    try:
-        response = requests.post('PUT_URI_IN_HERE', data=contents, headers={'Content-Type': 'application/octet-stream'})
-    except Exception:
-        response = {"Error": "Error sending request","filename": file.filename }
-    '''
 
     print(f"Random Filename: {filename}")
     print(f"Actual Filename: {file.filename}")
@@ -125,22 +109,27 @@ async def upload_image(file: UploadFile)-> dict:
     return response
 
 
-@app.get("/saveResults", tags=["results"])
-async def save_results(request_id:str, results:str) -> {}:
+#@app.get("/saveResults", tags=["results"])
+def save_results(request_id:str, results:str) -> {}:
     success = False
     filter = f"request_id eq '{request_id}'"
     storage_cn = get_storage_cn()
     try:
-        json_data = json.dumps(results)
-        table_client = TableClient.from_connection_string(storage_cn, table_name = "results")
-        entity = table_client.create_entity(entity=json_data)
+        tmp = results.text
+        tmp = tmp.replace('\n', '')
+        json_data = json.dumps(tmp)
+
+        table_service_client = TableServiceClient.from_connection_string(conn_str=storage_cn)
+        table_client = table_service_client.get_table_client(table_name="results")
+        #table_client = TableClient.from_connection_string(storage_cn, table_name = "results")
+        entity = table_client.create_entity(entity=tmp)
         success = True
-    except Exception:
-        print(f"Exception writing to Table: {Exception}")    
+    except Exception as e:
+        print(f"Exception writing to Table: {e}")    
     
     return {"success:": success, "request_id": request_id}
 
-    
+
 @app.get("/getResults/", tags=["results"])
 async def get_results(request_id:str) -> dict:
     """
@@ -162,3 +151,18 @@ async def get_results(request_id:str) -> dict:
     except StopIteration:
         None
     return json.dumps(entity)
+
+
+
+async def download_blob(blob_to_download:str, file_name: str) -> str:
+    storage_cn = get_storage_cn()
+    blob_service_client = BlobServiceClient.from_connection_string(storage_cn)
+    container_client = blob_service_client.get_container_client(container="uploads")
+    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    photo_path = os.path.join(__location__, file_name)
+    download_file_path = photo_path
+
+    with open(download_file_path, "wb") as file:
+        file.write(container_client.download_blob(blob_to_download).readall())
+
+    return photo_path
