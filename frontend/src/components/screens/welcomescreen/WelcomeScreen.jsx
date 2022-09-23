@@ -27,7 +27,7 @@ export default function WelcomeScreen() {
                     <Carousel.Item>
                         <Card style={{ height: '300px' }}>
                             <Card.Body style={{ paddingLeft: '3rem', paddingRight: '3rem' }}>
-                                <Card.Title>Card Title v12</Card.Title>
+                                <Card.Title>Card Title v14</Card.Title>
                                 <Card.Text>
                                     Some quick example text to build on the card title and make up the
                                     bulk of the card's content.

@@ -11,17 +11,9 @@ import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 import Badge from 'react-bootstrap/Badge';
 import axios from "axios";
-//import https from 'https';
 
 // Base Azure URL of backend
-//const baseURL = "http://hack-cancer.azurewebsites.net";////////////////////////////////
-//const baseURL = "https://backend";
-const baseURL = "https://hackaway-cancer-backend.azurewebsites.net";
-
-// const httpsAgent = new https.Agent({
-//     rejectUnauthorized: false,
-//   })
-// axios.defaults.httpsAgent = httpsAgent
+const baseURL = "https://hack-cancer.azurewebsites.net";
 
 // Upload image to Azure Storage Account method
 const uploadImage = () => new Promise((resolve, reject) => {
@@ -41,25 +33,26 @@ const uploadImage = () => new Promise((resolve, reject) => {
             resolve(response);
         })
         .catch((error) => {
+            console.log(error)
             reject(error);
         });
 });
 
-// Get results method of an image with request_id parameter
-const getResults = (requestId) => new Promise((resolve, reject) => {
-    console.log("Request_id: ", requestId);
-    axios
-        ///////////////////////////
-        //.get(baseURL + "/getResults?request_id=" + requestId)
-        ///////////////////////////
-        .get(baseURL + "/getResults?request_id=7rBDu3ltbpPSvJDV")
-        .then((response) => {
-            resolve(response);
-        })
-        .catch((error) => {
-            reject(error);
-        });
-});
+// // Get results method of an image with request_id parameter
+// const getResults = (requestId) => new Promise((resolve, reject) => {
+//     console.log("Request_id: ", requestId);
+//     axios
+//         ///////////////////////////
+//         //.get(baseURL + "/getResults?request_id=" + requestId)
+//         ///////////////////////////
+//         .get(baseURL + "/getResults?request_id=7rBDu3ltbpPSvJDV")
+//         .then((response) => {
+//             resolve(response);
+//         })
+//         .catch((error) => {
+//             reject(error);
+//         });
+// });
 
 export default function InputScreen() {
     // Navigate
@@ -98,20 +91,14 @@ export default function InputScreen() {
             uploadImage()
                 .then((uploadImageResponse) => {
                     setLoading(false);
-                    if (uploadImageResponse.status === 200 && uploadImageResponse.data.request_id) {
-                        // Get Result of the preious image uploaded
-                        getResults(uploadImageResponse.data.request_id)
-                            .then((getResultsResponse) => {
-                                var responseData = JSON.parse(JSON.parse(getResultsResponse.data).data);
-                                var score = responseData.confidence * 100;
-                                setLoading(false);
-                                navigate("/output?score=" + score);
-                            })
-                            .catch((getResultsError) => {
-                                setLoading(false);
-                                setShowError(true);
-                                console.error(getResultsError);
-                            });
+                    if (uploadImageResponse.status === 200) {
+                        var score = uploadImageResponse.data.prediction * 100;
+                        setLoading(false);
+                        navigate("/output?score=" + score);
+                    }
+                    else {
+                        setShowError(true);
+                        console.error(uploadImageResponse);
                     }
                 })
                 .catch((uploadImageError) => {
@@ -149,18 +136,42 @@ export default function InputScreen() {
                                 <p>Select an age range from the drop-down options.</p>
                                 <Form.Select>
                                     <option>N/A</option>
-                                    <option value="0">Under 50</option>
-                                    <option value="1">50-55</option>
+                                    <option value="0">Under 20</option>
+                                    <option value="0">20-29</option>
+                                    <option value="0">30-39</option>
+                                    <option value="0">40-49</option>
+                                    <option value="1">50-54</option>
                                     <option value="2">55-59</option>
                                     <option value="3">60 and Over</option>
                                 </Form.Select>
                             </Accordion.Body>
                         </Accordion.Item>
+                        {/* ABCDE check */}
+                        {/* <Accordion.Item eventKey="4">
+                            <Accordion.Header>ABCDE check</Accordion.Header>
+                            <Accordion.Body>
+                                <p>ABCDE is a check procedure to detect some characteristics that in some cases is very important to have in the analysis.</p>
+                                <Button onClick={handleClick}
+                                    variant="primary">
+                                    Upload a photo
+                                </Button>
+                                &nbsp;<Badge bg="info">{filename}</Badge>
+                                <input id="photo"
+                                    name="photo"
+                                    type="file"
+                                    ref={hiddenFileInput}
+                                    onChange={handleChange}
+                                    style={{ display: 'none' }}
+                                    accept="image/*"
+                                />
+                            </Accordion.Body>
+                        </Accordion.Item> */}
+
                         {/* Photo upload */}
                         <Accordion.Item eventKey="3">
                             <Accordion.Header>Photo (required)</Accordion.Header>
                             <Accordion.Body>
-                                <p>Upload a recent photo of the mole that is --missing info: something about photo quality, other?--</p>
+                                <p>Upload a recent photo of the mole that is in the best possible image quality.</p>
                                 <Button onClick={handleClick}
                                     variant="primary">
                                     Upload a photo

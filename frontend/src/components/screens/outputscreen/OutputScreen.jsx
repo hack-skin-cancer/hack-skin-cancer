@@ -78,9 +78,9 @@ export default function OutputScreen() {
                                     backgroundSize: "100% 100%",
                                     
                                 }} className="vertical-center">
-                                    {score <= 33 && <ProgressBar style={{ height: 30 }} variant="danger" animated now={score} label={score} />}
-                                    {score > 33 && score <= 66 && <ProgressBar style={{ height: 30 }} variant="warning" animated now={score} label={score} />}
-                                    {score > 66 && <ProgressBar style={{ height: 30 }} variant="success" animated now={score} label={score} />}
+                                    {score <= 33 && <ProgressBar style={{ height: 30 }} variant="danger" animated now={score} />}
+                                    {score > 33 && score <= 66 && <ProgressBar style={{ height: 30 }} variant="warning" animated now={score} />}
+                                    {score > 66 && <ProgressBar style={{ height: 30 }} variant="success" animated now={score} />}
                                 </Col>
                                 <Col>
                                     <Image src="images/th-up.png"></Image>
@@ -88,26 +88,8 @@ export default function OutputScreen() {
                             </Row>
                         </Container><hr></hr>
 
-                        {/* <Image src="/images/vertical-separator.png"></Image>
-                        <ProgressBar>
-                            <ProgressBar striped variant="danger" now={25} key={1} />
-                            <ProgressBar striped variant="warning" now={25} key={2} />
-                            <ProgressBar striped variant="info" now={25} key={3} />
-                            <ProgressBar striped variant="success" now={25} key={4} />
-                        </ProgressBar>
-                        <br></br>
-                        <ProgressBar>
-                            <ProgressBar striped variant="danger" now={25} key={1} />
-                            <ProgressBar height="50px" striped variant="warning" now={25} key={2} />
-                            <ProgressBar striped variant="info" now={25} key={3} />
-                            <ProgressBar striped variant="success" now={25} key={4} />
-                        </ProgressBar>
-                        <br></br>
-                        <ProgressBar striped style={{ height: 30 }} variant="danger" now={25} key={1} /> */}
-
-
                         {/* Score details */}
-                        <Card.Title>Score: {score}&nbsp;&nbsp;<Button size="sm" variant="outline-info" onClick={() => handleDiclaimerShow()}><FaExclamationCircle />&nbsp;&nbsp;Disclaimer</Button></Card.Title>
+                        <Card.Title>Score: {Number(score).toFixed(2)}%&nbsp;&nbsp;<Button size="sm" variant="outline-info" onClick={() => handleDiclaimerShow()}><FaExclamationCircle />&nbsp;&nbsp;Disclaimer</Button></Card.Title>
 
                         {score <= 33 && <Card.Text>
                             The image scan shows an abnormality that we believe requires further investigation.  It is recommended that you follow-up with your health care clinician.
@@ -148,7 +130,7 @@ export default function OutputScreen() {
                         {/* Green modal with message */}
                         {score > 66 && <Modal show={showGreenResult} onHide={handleShowGreenResult} centered>
                             <Modal.Header style={{ backgroundColor: "#24C960" }} closeButton>
-                                <Modal.Title>Score: {score}</Modal.Title>
+                                <Modal.Title>Score: {Number(score).toFixed(2)}%</Modal.Title>
                             </Modal.Header>
                             <Modal.Body>Score values fall into the expected result ranges to determine whether the skin image is likely to be of concern, likely to not be of concern, or in between. Score values not in the green range do not necessarily indicate disease, but the only way you can be sure is to see your health care clinician. The image scan shows an area that we believe is probably benign (not cancer). However, the only way you can be sure is to have a follow up exam with your health care clinician. This information about the result of your image scan is given to you to raise awareness.  Use this information to discuss with your health care clinician whether further investigation or tests may be appropriate for you. Not all cancers are found through image scans.  For the most accurate early detection, it is recommended to follow-up with your health care clinician. Melanoma can be treated successfully if it is detected early.</Modal.Body>
                         </Modal>}
