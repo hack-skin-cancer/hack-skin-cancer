@@ -14,7 +14,9 @@ import axios from "axios";
 //import https from 'https';
 
 // Base Azure URL of backend
-const baseURL = "https://hack-cancer.azurewebsites.net";
+//const baseURL = "http://hack-cancer.azurewebsites.net";////////////////////////////////
+//const baseURL = "https://backend";
+const baseURL = "https://hackaway-cancer-backend.azurewebsites.net";
 
 // const httpsAgent = new https.Agent({
 //     rejectUnauthorized: false,
@@ -27,11 +29,11 @@ const uploadImage = () => new Promise((resolve, reject) => {
     var imagefile = document.querySelector('#photo');
     formData.append("file", imagefile.files[0]);
     axios
-        .post(baseURL + "/uploadImage/",
+        .post(baseURL + "/uploadImage",
             formData,
             {
                 headers: {
-                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Origin':'*',
                     'Content-Type': 'multipart/form-data'
                 }
             })
@@ -45,15 +47,12 @@ const uploadImage = () => new Promise((resolve, reject) => {
 
 // Get results method of an image with request_id parameter
 const getResults = (requestId) => new Promise((resolve, reject) => {
+    console.log("Request_id: ", requestId);
     axios
         ///////////////////////////
         //.get(baseURL + "/getResults?request_id=" + requestId)
-        .get(baseURL + "/getResults?request_id=7rBDu3ltbpPSvJDV",
-            {
-                headers: {
-                    'Access-Control-Allow-Origin': '*'
-                }
-            })
+        ///////////////////////////
+        .get(baseURL + "/getResults?request_id=7rBDu3ltbpPSvJDV")
         .then((response) => {
             resolve(response);
         })
@@ -103,12 +102,10 @@ export default function InputScreen() {
                         // Get Result of the preious image uploaded
                         getResults(uploadImageResponse.data.request_id)
                             .then((getResultsResponse) => {
-                                console.log(getResultsResponse);
-                                console.log(getResultsResponse.data.confidence);
-                                console.log(getResultsResponse.data.confidence * 100);
+                                var responseData = JSON.parse(JSON.parse(getResultsResponse.data).data);
+                                var score = responseData.confidence * 100;
                                 setLoading(false);
-                                ///// configure score from response
-                                navigate("/output?score=" + getResultsResponse.data.confidence * 100);
+                                navigate("/output?score=" + score);
                             })
                             .catch((getResultsError) => {
                                 setLoading(false);
@@ -184,25 +181,21 @@ export default function InputScreen() {
 
                     {/* Button to analyze input data */}
                     <Button
+                        style={{ width: '100%' }}
                         variant="primary"
                         disabled={isLoading || !filename}
                         onClick={handleShow}
                     >
-                        {isLoading ? 'Analyzing…' : 'Analyze'}
+                        {isLoading ?
+                            <Spinner
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                            />
+                            : 'Analyze'}
                     </Button>
-
-                    {/* Spinner for loading */}
-                    {' '}
-                    {isLoading && <Button variant="primary" disabled>
-                        <Spinner
-                            as="span"
-                            animation="border"
-                            size="sm"
-                            role="status"
-                            aria-hidden="true"
-                        />
-                        <span className="visually-hidden">Loading...</span>
-                    </Button>}
 
                     {/* Modal to confirm image analyze action */}
                     <Modal show={show} onHide={handleCloseNo} centered>
