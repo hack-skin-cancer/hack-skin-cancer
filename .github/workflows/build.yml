@@ -39,5 +39,3 @@ jobs:
           docker build . -t hackacr.azurecr.io/hackcancer:${{github.run_number}} -t hackacr.azurecr.io/hackcancer:latest
           docker push hackacr.azurecr.io/hackcancer:${{github.run_number}}
           docker push hackacr.azurecr.io/hackcancer:latest
-          docker push shuffereu/hackcancer:${{github.run_number}}
-          docker push shuffereu/hackcancer:latest
