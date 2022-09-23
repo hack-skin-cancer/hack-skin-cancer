@@ -86,8 +86,8 @@ async def upload_image(file: UploadFile)-> dict:
     print(f"Uplaoded blob to: {blob.url}")
 
     # Drop message on a Queue
-    queue_client = QueueClient.from_connection_string(storage_cn, q_name)
-    queue_client.send_message({"filename":coded_filename, "url": blob.url})
+    #queue_client = QueueClient.from_connection_string(storage_cn, q_name)
+    #queue_client.send_message({"filename":coded_filename, "url": blob.url})
 
     # Call REST API
     response = None
@@ -97,11 +97,11 @@ async def upload_image(file: UploadFile)-> dict:
         json_payload = {"request_id":filename, "blob_name": coded_filename}
         response = requests.post(api_url, json.dumps(json_payload), headers=headers)
         print(f"----> Response: {response}")
-        save_results(filename, response)
+        prediction = save_results(filename, response)
     except Exception as e:
         print({"Error": {response}, "Exception:":e})
 
-    response = {"Success": "File Uploaded","upload_filename": file.filename, "request_id": filename}
+    response = {"Success": "File Uploaded","upload_filename": file.filename, "request_id": filename, "prediction":prediction['pred_score']}
 
     print(f"Random Filename: {filename}")
     print(f"Actual Filename: {file.filename}")
