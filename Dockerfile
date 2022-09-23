@@ -13,7 +13,8 @@ RUN apt-get clean \
 
 RUN apt-get -y install \
     python3-dev \
-    build-essential
+    build-essential \
+    tk-dev
 
 WORKDIR /app
 COPY ./backend/ /app
