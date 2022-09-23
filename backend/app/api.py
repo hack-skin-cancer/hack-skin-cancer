@@ -101,7 +101,7 @@ async def upload_image(file: UploadFile)-> dict:
     except Exception as e:
         print({"Error": {response}, "Exception:":e})
 
-    response = {"Success": "File Uploaded","upload_filename": file.filename, "request_id": filename, "prediction":prediction['pred_score']}
+    response = {"Success": "File Uploaded","upload_filename": file.filename, "request_id": filename, "prediction":prediction['prediction']}
 
     print(f"Random Filename: {filename}")
     print(f"Actual Filename: {file.filename}")
