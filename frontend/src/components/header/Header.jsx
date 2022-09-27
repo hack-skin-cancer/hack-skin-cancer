@@ -13,7 +13,7 @@ export default function Header(props) {
         {/* Main section of header */}
         <Row>
           <Navbar.Brand href="input">
-            <Image
+            <Image className="imgHeader"
               src="images/hackathon-logo-1.svg"
             />
             {props.title}

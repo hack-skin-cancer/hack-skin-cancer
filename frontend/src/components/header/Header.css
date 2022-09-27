@@ -9,8 +9,10 @@
   height: 50px;
 }
 
-img {
+.imgHeader {
   max-width: 150px;
+  max-height: 50px;
+  width: auto; 
 }
 
 .subtitle {

@@ -9,7 +9,7 @@ export default function Header(props) {
     <>
       {/* Microsoft logo image */}
       <Container fluid className="footer">
-        <Image src="images/Microsoft-logo_rgb_c-wht.png"></Image>
+        <Image className="imgFooter" src="images/Microsoft-logo_rgb_c-wht.png"></Image>
       </Container>
     </>
   );

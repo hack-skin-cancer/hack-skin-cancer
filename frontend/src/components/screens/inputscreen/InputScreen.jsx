@@ -11,31 +11,46 @@ import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 import Badge from 'react-bootstrap/Badge';
 import axios from "axios";
+import Table from 'react-bootstrap/Table';
+import Image from 'react-bootstrap/Image'
 
 // Base Azure URL of backend
-const baseURL = "https://hack-cancer.azurewebsites.net";
+// const baseURL = "https://hack-cancer.azurewebsites.net";
+//const baseURL = "https://hack-cancer-api.azurewebsites.net";
+const baseURL = process.env.REACT_APP_API_BASE_URL;
+//const baseURL = "http://localhost:8080";
 
 // Upload image to Azure Storage Account method
 const uploadImage = () => new Promise((resolve, reject) => {
-    var formData = new FormData();
-    var imagefile = document.querySelector('#photo');
-    formData.append("file", imagefile.files[0]);
-    axios
-        .post(baseURL + "/uploadImage",
-            formData,
-            {
-                headers: {
-                    'Access-Control-Allow-Origin':'*',
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
-        .then((response) => {
-            resolve(response);
-        })
-        .catch((error) => {
-            console.log(error)
-            reject(error);
-        });
+
+    // Fake response
+    setTimeout(function () {
+        resolve({ status: 200, data: { prediction: 0.268 } });
+    }, 3000);
+
+    ////////////////
+
+    // // Real response
+    // var formData = new FormData();
+    // var imagefile = document.querySelector('#photo');
+    // formData.append("file", imagefile.files[0]);
+    // axios
+    //     .post(baseURL + "/uploadImage",
+    //         formData,
+    //         {
+    //             headers: {
+    //                 'Access-Control-Allow-Origin': '*',
+    //                 'Content-Type': 'multipart/form-data'
+    //             }
+    //         })
+    //     .then((response) => {
+    //         resolve(response);
+    //     })
+    //     .catch((error) => {
+    //         console.log(error)
+    //         reject(error);
+    //     });
+    ///////////////
 });
 
 // // Get results method of an image with request_id parameter
@@ -61,6 +76,8 @@ export default function InputScreen() {
     // States
     const [isLoading, setLoading] = useState(false);
     const [show, setShow] = useState(false);
+    const [showABCDEModal, setShowABCDEModal] = useState(false);
+    const [showABCDEReferenceModal, setShowABCDEReferenceModal] = useState(false);
     const [showError, setShowError] = useState(false);
     const [filename, setFilename] = useState("");
 
@@ -71,6 +88,8 @@ export default function InputScreen() {
     }
     const handleCloseNo = () => setShow(false);
     const handleShow = () => setShow(true);
+    const handleABCDEModal = () => setShowABCDEModal(!showABCDEModal);
+    const handleABCDEReferenceModal = () => setShowABCDEReferenceModal(!showABCDEReferenceModal);
     const handleError = () => setShowError(false);
     const handleSubmit = () => setLoading(true);
     const handleClick = event => {
@@ -90,6 +109,7 @@ export default function InputScreen() {
             // Send request to upload the image to analyze
             uploadImage()
                 .then((uploadImageResponse) => {
+                    console.log("Response: ", uploadImageResponse);
                     setLoading(false);
                     if (uploadImageResponse.status === 200) {
                         var score = uploadImageResponse.data.prediction * 100;
@@ -147,25 +167,21 @@ export default function InputScreen() {
                             </Accordion.Body>
                         </Accordion.Item>
                         {/* ABCDE check */}
-                        {/* <Accordion.Item eventKey="4">
+                        <Accordion.Item eventKey="4">
                             <Accordion.Header>ABCDE check</Accordion.Header>
+
                             <Accordion.Body>
                                 <p>ABCDE is a check procedure to detect some characteristics that in some cases is very important to have in the analysis.</p>
-                                <Button onClick={handleClick}
-                                    variant="primary">
-                                    Upload a photo
+                                {/* Button to analyze input data */}
+                                <Button
+                                    style={{ width: '100%' }}
+                                    variant="primary"
+                                    onClick={handleABCDEModal}
+                                >
+                                    Select
                                 </Button>
-                                &nbsp;<Badge bg="info">{filename}</Badge>
-                                <input id="photo"
-                                    name="photo"
-                                    type="file"
-                                    ref={hiddenFileInput}
-                                    onChange={handleChange}
-                                    style={{ display: 'none' }}
-                                    accept="image/*"
-                                />
                             </Accordion.Body>
-                        </Accordion.Item> */}
+                        </Accordion.Item>
 
                         {/* Photo upload */}
                         <Accordion.Item eventKey="3">
@@ -224,6 +240,83 @@ export default function InputScreen() {
                         </Modal.Footer>
                     </Modal>
 
+                    {/* ABCDE modal */}
+                    <Modal show={showABCDEModal} onHide={handleABCDEModal} centered>
+                        <Modal.Header closeButton>
+                            <Modal.Title>ABCDE check</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            This check list represents the ABCDE characteristics check of the mole. Do you see any of this characteristics?
+                            &nbsp;
+                            <Button variant="info" size="sm" onClick={handleABCDEReferenceModal}>
+                                See reference
+                            </Button>
+                            <br></br>
+                            <br></br>
+                            <Form>
+                                <Table striped bordered hover>
+                                    <thead>
+                                        <tr style={{ textAlignLast: "center" }}>
+                                            <th>#</th>
+                                            <th>Description</th>
+                                            <th>Selection</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr style={{ textAlignLast: "center" }}>
+                                            <td>A</td>
+                                            <td>Asymmetry</td>
+                                            <td><Form.Check
+                                                type="switch"
+                                            /></td>
+                                        </tr>
+                                        <tr style={{ textAlignLast: "center" }}>
+                                            <td>B</td>
+                                            <td>Border</td>
+                                            <td><Form.Check
+                                                type="switch"
+                                            /></td>
+                                        </tr>
+                                        <tr style={{ textAlignLast: "center" }}>
+                                            <td>C</td>
+                                            <td>Color</td>
+                                            <td><Form.Check
+                                                type="switch"
+                                            /></td>
+                                        </tr>
+                                        <tr style={{ textAlignLast: "center" }}>
+                                            <td>D</td>
+                                            <td>Diameter</td>
+                                            <td><Form.Check
+                                                type="switch"
+                                            /></td>
+                                        </tr>
+                                        <tr style={{ textAlignLast: "center" }}>
+                                            <td>E</td>
+                                            <td>Evolving</td>
+                                            <td><Form.Check
+                                                type="switch"
+                                            /></td>
+                                        </tr>
+                                    </tbody>
+                                </Table>
+
+
+                            </Form>
+
+                        </Modal.Body>
+                    </Modal>
+
+                    {/* ABCDE reference modal */}
+                    <Modal fullscreen show={showABCDEReferenceModal} onHide={handleABCDEReferenceModal} centered>
+                        <Modal.Header closeButton>
+                            <Modal.Title>ABCDE reference</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <Image src="/images/ABCDEs.jpg" />
+                        </Modal.Body>
+                    </Modal>
+
                     {/* Error modal with message */}
                     <Modal show={showError} onHide={handleError} centered>
                         <Modal.Header closeButton>
@@ -231,6 +324,7 @@ export default function InputScreen() {
                         </Modal.Header>
                         <Modal.Body>There was an error trying to analyze the image. Please try again later.</Modal.Body>
                     </Modal>
+
                 </Form>
             </Main>
             <Footer />
